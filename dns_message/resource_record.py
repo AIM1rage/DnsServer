@@ -47,7 +47,7 @@ class ResourceRecord(ABC):
         self.rdata, pointer = self._read_data(message, pointer)
         self.pointer = pointer
         print(
-            f'Reading record: {self.rname=} {self.rtype=} {self.rclass=} {self.ttl=} {self.rdlength=} {self.rdata}')
+            f'Reading record: {self.rname=} {self.rtype=} {self.rclass=} {self.ttl=} {self.rdlength=} {self.rdata=}')
 
     @abc.abstractmethod
     def _read_data(self, message, pointer):

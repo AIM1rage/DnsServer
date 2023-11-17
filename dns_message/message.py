@@ -3,6 +3,7 @@ from dns_message.header import Header
 from dns_message.question import Question
 from dns_message.answer import Answer
 from dns_message.authority import Authority
+from dns_message.additional import Additional
 
 
 @dataclass
@@ -25,6 +26,7 @@ class DnsMessage:
     questions: list[Question]
     answers: list[Answer]
     authoritative_records: list[Authority]
+    additional_records: list[Additional]
 
     # additional
 
@@ -42,10 +44,11 @@ class DnsMessage:
                                                 pointer,
                                                 )
         print(f'Authority parsed!')
-        # additional = parse_additional(message)
-        # return DnsMessage(header, question, answer, authority, additional)
+        additional = Additional.parse(message, header.arcount, pointer)
+        print(f'Additional parsed!')
         return DnsMessage(header,
                           questions,
                           authoritative_records,
                           answer,
+                          additional,
                           )

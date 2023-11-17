@@ -1,4 +1,5 @@
 import struct
+import binascii
 
 
 def read_name(message: bytes, pointer: int) -> tuple[str, int]:
@@ -7,7 +8,18 @@ def read_name(message: bytes, pointer: int) -> tuple[str, int]:
 
 
 def read_ipv4(message: bytes, pointer: int) -> tuple[str, int]:
-    return ".".join(str(message[pointer + i]) for i in range(4)), pointer
+    print(message[pointer: pointer + 4])
+    print(*(struct.unpack_from('!4B', message[pointer: pointer + 4])))
+    return ".".join(str(message[pointer + i]) for i in range(4)), pointer + 4
+
+
+def read_ipv6(message: bytes, pointer):
+    return ":".join(
+        binascii.hexlify(
+            message[pointer + 2 * i:
+                    pointer + 2 * (i + 1)])
+        .decode() for i in
+        range(8)), pointer + 16
 
 
 def read_data(message: bytes,
