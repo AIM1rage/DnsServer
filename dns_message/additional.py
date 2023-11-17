@@ -3,16 +3,8 @@ from dns_message.resource_record import ResourceRecord
 
 
 class Additional(ResourceRecord):
-    @staticmethod
-    def parse(message: bytes, count: int, pointer: int):
-        records = []
-        for _ in range(count):
-            record = Additional(message, pointer)
-            pointer = record.pointer
-            records.append(record)
-        return records, pointer
 
-    def _read_data(self, message, pointer):
+    def _read_data(self, message: bytes, pointer: int):
         match self.rdlength:
             case 4:
                 return read_ipv4(message, pointer)
@@ -21,5 +13,7 @@ class Additional(ResourceRecord):
             case _:
                 raise ValueError(f'Unsupported data type: {self.rtype}')
 
-
-
+    @staticmethod
+    def parse(message: bytes, count: int, pointer: int):
+        return ResourceRecord._parse(message, count, pointer,
+                                     lambda m, p: Additional(m, p))

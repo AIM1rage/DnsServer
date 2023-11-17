@@ -35,7 +35,6 @@ class ResourceRecord(ABC):
     ttl: int
     rdlength: int
     rdata: str
-
     pointer: int
 
     def __init__(self, message: bytes, pointer: int):
@@ -50,5 +49,14 @@ class ResourceRecord(ABC):
             f'Reading record: {self.rname=} {self.rtype=} {self.rclass=} {self.ttl=} {self.rdlength=} {self.rdata=}')
 
     @abc.abstractmethod
-    def _read_data(self, message, pointer):
+    def _read_data(self, message: bytes, pointer: int):
         ...
+
+    @staticmethod
+    def _parse(message: bytes, count: int, pointer: int, constructor):
+        records = []
+        for _ in range(count):
+            record = constructor(message, pointer)
+            pointer = record.pointer
+            records.append(record)
+        return records, pointer

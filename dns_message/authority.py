@@ -31,9 +31,5 @@ class Authority(ResourceRecord):
 
     @staticmethod
     def parse(message: bytes, count: int, pointer: int):
-        records = []
-        for _ in range(count):
-            record = Authority(message, pointer)
-            pointer = record.pointer
-            records.append(record)
-        return records, pointer
+        return ResourceRecord._parse(message, count, pointer,
+                                     lambda m, p: Authority(m, p))

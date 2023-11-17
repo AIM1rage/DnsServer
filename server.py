@@ -7,7 +7,7 @@ from collections import namedtuple
 DnsServer = namedtuple('DnsServer', ['name', 'ip'])
 
 ROOT_DNS_SERVERS = [
-    # DnsServer('aboba', '213.180.193.1'),
+    DnsServer('aboba', '213.180.193.1'),
     DnsServer('a.root-servers.net.', '198.41.0.4'),
     DnsServer('b.root-servers.net.', '199.9.14.201'),
     DnsServer('c.root-servers.net.', '192.33.4.12'),

@@ -8,8 +8,6 @@ def read_name(message: bytes, pointer: int) -> tuple[str, int]:
 
 
 def read_ipv4(message: bytes, pointer: int) -> tuple[str, int]:
-    print(message[pointer: pointer + 4])
-    print(*(struct.unpack_from('!4B', message[pointer: pointer + 4])))
     return ".".join(str(message[pointer + i]) for i in range(4)), pointer + 4
 
 
