@@ -2,8 +2,8 @@ import struct
 import binascii
 
 
-def read_name(message: bytes, pointer: int) -> tuple[str, int]:
-    name, pointer, _ = read_data(message, pointer)
+def read_domain_name(message: bytes, pointer: int) -> tuple[str, int]:
+    name, pointer, _ = read_chunks(message, pointer)
     return b'.'.join(name).decode(), pointer
 
 
@@ -20,9 +20,16 @@ def read_ipv6(message: bytes, pointer):
         range(8)), pointer + 16
 
 
-def read_data(message: bytes,
-              pointer: int,
-              ) -> tuple[list[str], int, bool]:
+def read_fixed_length_data(message: bytes,
+                           pointer: int,
+                           length: int
+                           ) -> tuple[bytes, int]:
+    return message[pointer: pointer + length], pointer + length
+
+
+def read_chunks(message: bytes,
+                pointer: int,
+                ) -> tuple[list[str], int, bool]:
     data = []
     while True:
         first_two_bits = message[pointer] >> 6
@@ -38,7 +45,7 @@ def read_data(message: bytes,
             case 3:  # 11 prefix bits
                 chunk_offset = (((message[pointer] & 0b00111111) << 8) +
                                 message[pointer + 1])
-                chunks, _, is_end = read_data(message, chunk_offset)
+                chunks, _, is_end = read_chunks(message, chunk_offset)
                 data.extend(chunks)
                 pointer += 2
                 if is_end:

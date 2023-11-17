@@ -1,4 +1,4 @@
-from dns_message.utils import read_name
+from dns_message.utils import read_domain_name
 from dns_message.resource_record import ResourceRecord
 
 
@@ -27,7 +27,7 @@ class Authority(ResourceRecord):
     """
 
     def _read_data(self, message, pointer):
-        return read_name(message, pointer)
+        return read_domain_name(message, pointer)
 
     @staticmethod
     def parse(message: bytes, count: int, pointer: int):

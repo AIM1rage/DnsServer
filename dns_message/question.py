@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from dns_message.utils import read_name, read_ushort_number
+from dns_message.utils import read_domain_name, read_ushort_number
 
 
 @dataclass
@@ -17,7 +17,6 @@ class Question:
     |                     QCLASS                    |
     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
     """
-
     qname: str
     qtype: int
     qclass: int
@@ -32,7 +31,7 @@ class Question:
 
     @staticmethod
     def _read_question(message: bytes, pointer: int):
-        qname, pointer = read_name(message, pointer)
+        qname, pointer = read_domain_name(message, pointer)
         qtype, pointer = read_ushort_number(message, pointer)
         qclass, pointer = read_ushort_number(message, pointer)
         print(f'Reading question: {qname}')

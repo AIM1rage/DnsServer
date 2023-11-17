@@ -34,18 +34,27 @@ class DnsMessage:
     def parse_message(message: bytes):
         pointer = 0
         header, pointer = Header.parse(message, pointer)
-        print(f'Header parsed!')
+        print(f'Header parsed! {pointer=}')
+
         questions, pointer = Question.parse(message, header.qdcount, pointer)
-        print(f'Questions parsed!')
-        answer = Answer.parse(message, header.ancount, pointer)
-        print(f'Answers parsed!')
-        authoritative_records = Authority.parse(message,
-                                                header.nscount,
-                                                pointer,
-                                                )
-        print(f'Authority parsed!')
-        additional = Additional.parse(message, header.arcount, pointer)
-        print(f'Additional parsed!')
+        print(f'Questions parsed! {pointer=}')
+
+        answer, pointer = Answer.parse(message, header.ancount, pointer)
+        print(f'Answers parsed! {pointer=}')
+
+        authoritative_records, pointer = Authority.parse(message,
+                                                         header.nscount,
+                                                         pointer,
+                                                         )
+        print(f'Authority parsed! {pointer=}')
+
+        additional, pointer = Additional.parse(message,
+                                               header.arcount,
+                                               pointer,
+                                               )
+        print(f'Additional parsed! {pointer=}')
+
+        print(f'Message parsed! {pointer=} and {len(message)=}')
         return DnsMessage(header,
                           questions,
                           authoritative_records,

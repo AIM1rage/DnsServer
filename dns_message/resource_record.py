@@ -1,6 +1,6 @@
 import abc
 from abc import ABC
-from dns_message.utils import (read_name,
+from dns_message.utils import (read_domain_name,
                                read_ushort_number,
                                read_ulong_number,
                                )
@@ -38,7 +38,7 @@ class ResourceRecord(ABC):
     pointer: int
 
     def __init__(self, message: bytes, pointer: int):
-        self.rname, pointer = read_name(message, pointer)
+        self.rname, pointer = read_domain_name(message, pointer)
         self.rtype, pointer = read_ushort_number(message, pointer)
         self.rclass, pointer = read_ushort_number(message, pointer)
         self.ttl, pointer = read_ulong_number(message, pointer)
