@@ -6,6 +6,10 @@ def read_name(message: bytes, pointer: int) -> tuple[str, int]:
     return b'.'.join(name).decode(), pointer
 
 
+def read_ipv4(message: bytes, pointer: int) -> tuple[str, int]:
+    return ".".join(str(message[pointer + i]) for i in range(4)), pointer
+
+
 def read_data(message: bytes,
               pointer: int,
               ) -> tuple[list[str], int, bool]:

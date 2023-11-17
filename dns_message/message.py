@@ -47,4 +47,5 @@ class DnsMessage:
         return DnsMessage(header,
                           questions,
                           authoritative_records,
+                          answer,
                           )
