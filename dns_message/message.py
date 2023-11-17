@@ -23,22 +23,23 @@ class DnsMessage:
 
     header: Header
     questions: list[Question]
-    # answers: list[]
+    answers: list[Answer]
     authoritative_records: list[Authority]
 
     # additional
 
     @staticmethod
     def parse_message(message: bytes):
-        offset = 0
-        header, offset = Header.parse(message, offset)
+        pointer = 0
+        header, pointer = Header.parse(message, pointer)
         print(f'Header parsed!')
-        questions, offset = Question.parse(message, header.qdcount, offset)
+        questions, pointer = Question.parse(message, header.qdcount, pointer)
         print(f'Questions parsed!')
-        # answer = parse_answer(message)
+        answer = Answer.parse(message, header.ancount, pointer)
+        print(f'Answers parsed!')
         authoritative_records = Authority.parse(message,
                                                 header.nscount,
-                                                offset,
+                                                pointer,
                                                 )
         print(f'Authority parsed!')
         # additional = parse_additional(message)

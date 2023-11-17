@@ -29,12 +29,14 @@ class Header:
     arcount: int
 
     @staticmethod
-    def parse(message: bytes, offset: int):
+    def parse(message: bytes, pointer: int):
         id, flags, qdcount, ancount, nscount, arcount = struct.unpack_from(
             '!6H',
             message,
-            offset=offset,
+            offset=pointer,
         )
-        print(f'Reading headers: {id=} {qdcount=} {ancount=} {nscount=} {arcount=}')
+        print(
+            f'Reading headers: {id=} {qdcount=} {ancount=} {nscount=} {arcount=}')
         return (Header(id, flags, qdcount, ancount, nscount, arcount),
-                offset + 12)
+                pointer + 12,
+                )

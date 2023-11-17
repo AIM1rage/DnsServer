@@ -1,5 +1,5 @@
 class Answer:
-    def parse(message: bytes):
+    @staticmethod
+    def parse(message: bytes, ancount: int, pointer: int):
+
         return None
-
-

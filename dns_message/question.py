@@ -23,17 +23,17 @@ class Question:
     qclass: int
 
     @staticmethod
-    def parse(message: bytes, qdcount: int, offset: int):
+    def parse(message: bytes, qdcount: int, pointer: int):
         questions = []
         for _ in range(qdcount):
-            question, offset = Question._read_question(message, offset)
+            question, pointer = Question._read_question(message, pointer)
             questions.append(question)
-        return questions, offset
+        return questions, pointer
 
     @staticmethod
-    def _read_question(message: bytes, offset: int):
-        qname, offset = read_name(message, offset)
-        qtype, offset = read_ushort_number(message, offset)
-        qclass, offset = read_ushort_number(message, offset)
+    def _read_question(message: bytes, pointer: int):
+        qname, pointer = read_name(message, pointer)
+        qtype, pointer = read_ushort_number(message, pointer)
+        qclass, pointer = read_ushort_number(message, pointer)
         print(f'Reading question: {qname}')
-        return Question(qname, qtype, qclass), offset
+        return Question(qname, qtype, qclass), pointer

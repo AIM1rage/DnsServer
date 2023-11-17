@@ -1,56 +1,55 @@
 import struct
-from typing import Optional
 
 
-def read_name(message: bytes, offset: int) -> tuple[str, int]:
-    name, offset, _ = read_data(message, offset)
-    return b'.'.join(name).decode(), offset
+def read_name(message: bytes, pointer: int) -> tuple[str, int]:
+    name, pointer, _ = read_data(message, pointer)
+    return b'.'.join(name).decode(), pointer
 
 
 def read_data(message: bytes,
-              offset: int,
+              pointer: int,
               ) -> tuple[list[str], int, bool]:
     data = []
     while True:
-        first_two_bits = message[offset] >> 6
+        first_two_bits = message[pointer] >> 6
         match first_two_bits:
-            case 0:
-                length = message[offset]
-                offset += 1
+            case 0:  # 00 prefix bits
+                length = message[pointer]
+                pointer += 1
                 if length == 0:
                     break
-                chunk = message[offset: offset + length]
+                chunk = message[pointer: pointer + length]
                 data.append(chunk)
-                offset += length
-            case 3:
-                chunk_offset = (((message[offset] & 0b00111111) << 8) +
-                                message[offset + 1])
+                pointer += length
+            case 3:  # 11 prefix bits
+                chunk_offset = (((message[pointer] & 0b00111111) << 8) +
+                                message[pointer + 1])
                 chunks, _, is_end = read_data(message, chunk_offset)
                 data.extend(chunks)
-                offset += 2
+                pointer += 2
                 if is_end:
                     break
-            case _:
+            case _:  # not supported bits 01 and 10
                 raise ValueError(
-                    f'Not supported data type: {first_two_bits=} of {message[offset]}')
-    return data, offset, True
+                    f'Not supported data type: {first_two_bits=} of {message[pointer]}')
+    return data, pointer, True
 
 
 def read_number(message: bytes,
                 format: str,
                 length,
-                offset: int,
+                pointer: int,
                 ) -> tuple[int, int]:
-    number = struct.unpack_from(format, message[offset: offset + length])[0]
-    offset += length
-    return number, offset
+    number = struct.unpack_from(format, message[pointer: pointer + length])[0]
+    pointer += length
+    return number, pointer
 
 
-def read_ushort_number(message: bytes, offset: int) -> tuple[int, int]:
-    number, offset = read_number(message, '!H', 2, offset)
-    return number, offset
+def read_ushort_number(message: bytes, pointer: int) -> tuple[int, int]:
+    number, pointer = read_number(message, '!H', 2, pointer)
+    return number, pointer
 
 
-def read_ulong_number(message: bytes, offset: int) -> tuple[int, int]:
-    number, offset = read_number(message, '!L', 4, offset)
-    return number, offset
+def read_ulong_number(message: bytes, pointer: int) -> tuple[int, int]:
+    number, pointer = read_number(message, '!L', 4, pointer)
+    return number, pointer

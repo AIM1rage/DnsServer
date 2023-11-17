@@ -37,20 +37,20 @@ class Authority:
     rdata: str
 
     @staticmethod
-    def parse(message: bytes, nscount: int, offset: int):
+    def parse(message: bytes, nscount: int, pointer: int):
         records = []
         for _ in range(nscount):
-            record, offset = Authority._read_record(message, offset)
+            record, pointer = Authority._read_record(message, pointer)
             records.append(record)
-        return records, offset
+        return records, pointer
 
     @staticmethod
-    def _read_record(message: bytes, offset: int):
-        rname, offset = read_name(message, offset)
-        rtype, offset = read_ushort_number(message, offset)
-        rclass, offset = read_ushort_number(message, offset)
-        ttl, offset = read_ulong_number(message, offset)
-        rdlength, offset = read_ushort_number(message, offset)
-        rdata, offset = read_name(message, offset)
+    def _read_record(message: bytes, pointer: int):
+        rname, pointer = read_name(message, pointer)
+        rtype, pointer = read_ushort_number(message, pointer)
+        rclass, pointer = read_ushort_number(message, pointer)
+        ttl, pointer = read_ulong_number(message, pointer)
+        rdlength, pointer = read_ushort_number(message, pointer)
+        rdata, pointer = read_name(message, pointer)
         print(f'Reading authority: {rname=} with {ttl=} and {rdata=}')
-        return Authority(rname, rtype, rclass, ttl, rdlength, rdata), offset
+        return Authority(rname, rtype, rclass, ttl, rdlength, rdata), pointer

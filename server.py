@@ -26,7 +26,6 @@ ROOT_DNS_SERVERS = [
 class DnsRequestHandler(socketserver.BaseRequestHandler):
     def __init__(self, request, client_address, server):
         super().__init__(request, client_address, server)
-        ...
 
     def handle(self):
         query = self.request[0]
@@ -40,8 +39,5 @@ class DnsRequestHandler(socketserver.BaseRequestHandler):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(response, (ROOT_DNS_SERVERS[0].ip, 53))
         raw_response = sock.recv(4096)
-        with open('aboba.txt', 'wb') as file:
-            file.write(raw_response)
         response = DnsMessage.parse_message(raw_response)
-
         return raw_response
