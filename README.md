@@ -3,6 +3,10 @@
 This server is required to obtain an IP address from a domain name. The
 implementation is recursive (cache supported!).
 
+### NOTE! 
+
+If the DNS server is unable to resolve the domain name, the user is presented with the first response from the root server.
+
 ## Requirements
 
 - Python 3.10+

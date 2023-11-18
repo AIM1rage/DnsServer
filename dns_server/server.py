@@ -6,7 +6,6 @@ from dns_server.values import DnsServer
 from data.database import Database
 
 ROOT_DNS_SERVERS = [
-    DnsServer('aboba', '213.180.193.1', None),
     DnsServer('a.root-servers.net.', '198.41.0.4', None),
     DnsServer('b.root-servers.net.', '199.9.14.201', None),
     DnsServer('c.root-servers.net.', '192.33.4.12', None),
@@ -24,6 +23,8 @@ ROOT_DNS_SERVERS = [
 
 
 class DnsRequestHandler(socketserver.BaseRequestHandler):
+    NO_ANSWER_TIME = 2
+
     def __init__(self, request, client_address, server):
         self.database = Database()
         super().__init__(request, client_address, server)
@@ -53,9 +54,14 @@ class DnsRequestHandler(socketserver.BaseRequestHandler):
             return response.raw_message
 
         response = self.send_query(query, servers_to_ask.pop())
+        first_response = response
+        start_time = time.time()
         while servers_to_ask and not response.has_answers():
             server = servers_to_ask.pop()
             response = self.send_query(query, server)
+            response_time = time.time() - start_time
+            if response_time > DnsRequestHandler.NO_ANSWER_TIME:
+                break
             servers_to_ask.extend(response.get_responsible_dns_servers())
 
         if response.has_answers():
@@ -65,4 +71,4 @@ class DnsRequestHandler(socketserver.BaseRequestHandler):
                                     response.answers[0].ttl,
                                     )
 
-        return response.raw_message
+        return first_response.raw_message
