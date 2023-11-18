@@ -31,7 +31,7 @@ class DnsMessage:
     raw_message: bytes
 
     def has_answers(self):
-        return any(answer.rtype == 1 for answer in self.answers)
+        return any(answer.rtype in (1, 5) for answer in self.answers)
 
     def has_responsible_dns_servers(self):
         return any(record.rtype == 1 for record in self.additional_records)
@@ -40,6 +40,10 @@ class DnsMessage:
         for record in self.additional_records:
             if record.rtype == 1:
                 yield DnsServer(record.rdata, record.rdata, record.rname)
+
+    def change_id(self, other):
+        self.header.id = other.header.id
+        self.raw_message = other.raw_message[:2] + self.raw_message[2:]
 
     @staticmethod
     def parse_message(message: bytes):

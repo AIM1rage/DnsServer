@@ -4,7 +4,10 @@ import binascii
 
 def read_domain_name(message: bytes, pointer: int) -> tuple[str, int]:
     name, pointer, _ = read_chunks(message, pointer)
-    return b'.'.join(name).decode(), pointer
+    try:
+        return b'.'.join(name).decode(), pointer
+    except UnicodeDecodeError:
+        return '', pointer
 
 
 def read_ipv4(message: bytes, pointer: int) -> tuple[str, int]:
