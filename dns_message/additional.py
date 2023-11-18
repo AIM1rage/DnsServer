@@ -10,10 +10,8 @@ class Additional(ResourceRecord):
                 return read_ipv4(message, pointer)
             case 28:  # AAAA record
                 return read_ipv6(message, pointer)
-            case 41:  # OPT record
+            case _:  # other records
                 return read_fixed_length_data(message, pointer, self.rdlength)
-            case _:
-                raise ValueError(f'Unsupported data type: {self.rtype}')
 
     @staticmethod
     def parse(message: bytes, count: int, pointer: int):

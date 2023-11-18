@@ -1,5 +1,5 @@
 import socketserver
-from server import DnsRequestHandler
+from dns_server.server import DnsRequestHandler
 
 
 if __name__ == "__main__":

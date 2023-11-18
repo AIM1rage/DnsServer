@@ -4,6 +4,7 @@ from dns_message.question import Question
 from dns_message.answer import Answer
 from dns_message.authority import Authority
 from dns_message.additional import Additional
+from dns_server.values import DnsServer
 
 
 @dataclass
@@ -27,8 +28,18 @@ class DnsMessage:
     answers: list[Answer]
     authoritative_records: list[Authority]
     additional_records: list[Additional]
+    raw_message: bytes
 
-    # additional
+    def has_answers(self):
+        return any(answer.rtype == 1 for answer in self.answers)
+
+    def has_responsible_dns_servers(self):
+        return any(record.rtype == 1 for record in self.additional_records)
+
+    def get_responsible_dns_servers(self):
+        for record in self.additional_records:
+            if record.rtype == 1:
+                yield DnsServer(record.rdata, record.rdata, record.rname)
 
     @staticmethod
     def parse_message(message: bytes):
@@ -39,7 +50,7 @@ class DnsMessage:
         questions, pointer = Question.parse(message, header.qdcount, pointer)
         print(f'Questions parsed! {pointer=}')
 
-        answer, pointer = Answer.parse(message, header.ancount, pointer)
+        answers, pointer = Answer.parse(message, header.ancount, pointer)
         print(f'Answers parsed! {pointer=}')
 
         authoritative_records, pointer = Authority.parse(message,
@@ -48,16 +59,17 @@ class DnsMessage:
                                                          )
         print(f'Authority parsed! {pointer=}')
 
-        additional, pointer = Additional.parse(message,
-                                               header.arcount,
-                                               pointer,
-                                               )
+        additional_records, pointer = Additional.parse(message,
+                                                       header.arcount,
+                                                       pointer,
+                                                       )
         print(f'Additional parsed! {pointer=}')
 
         print(f'Message parsed! {pointer=} and {len(message)=}')
         return DnsMessage(header,
                           questions,
+                          answers,
                           authoritative_records,
-                          answer,
-                          additional,
+                          additional_records,
+                          message,
                           )
